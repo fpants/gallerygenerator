@@ -18,7 +18,7 @@ import java.nio.file.*;
 public class ImageResizer {
     private static final Logger LOG = LoggerFactory.getLogger(ImageResizer.class);
 
-    public void resizeAllImages(String inputDirectory, String outputDirectory, int imageLength) {
+    public void resizeAllImages(String inputDirectory, String outputDirectory, int imageLength) throws IOException {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(inputDirectory))) {
             for (Path path : directoryStream) {
                 String filename = path.getFileName().toString();
@@ -26,7 +26,7 @@ public class ImageResizer {
 
                 BufferedImage originalImage = ImageIO.read(path.toFile());
                 if (originalImage == null) {
-                    LOG.info("{}: Not an image file - skipping", filename);
+                    LOG.info("{}: Not a recognised image file - skipping", filename);
                     continue;
                 }
 
@@ -44,12 +44,10 @@ public class ImageResizer {
                 LOG.info("{}: Writing new image to: {}", filename, outputFilename);
                 ImageIO.write(resizedImage, format, new File(outputFilename));
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    private Scalr.Rotation determineRotation(Path image) {
+    private Scalr.Rotation determineRotation(Path image) throws IOException {
         try {
             Metadata metadata = ImageMetadataReader.readMetadata(image.toFile());
             ExifIFD0Directory exifIFD0 = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
@@ -67,8 +65,8 @@ public class ImageResizer {
                 default:
                     throw new RuntimeException("Unable to determine orientation of: " + image);
             }
-        } catch (MetadataException | IOException | ImageProcessingException e) {
-            throw new RuntimeException(e);
+        } catch (MetadataException | ImageProcessingException e) {
+            throw new IOException(e);
         }
     }
 
@@ -77,6 +75,6 @@ public class ImageResizer {
         if (lastDotIndex > 0) {
             return filename.substring(lastDotIndex + 1);
         }
-        throw new RuntimeException("Unable to determine file format of: " + filename);
+        throw new IllegalArgumentException("Unable to determine file format of: " + filename);
     }
 }
