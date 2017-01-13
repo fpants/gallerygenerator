@@ -29,4 +29,4 @@ Here are the CLI options:
 
 Download
 --------
-See the [Releases](releases) page.
+See the Releases page.
