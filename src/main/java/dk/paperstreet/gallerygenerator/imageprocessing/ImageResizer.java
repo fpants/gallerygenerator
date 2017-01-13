@@ -26,7 +26,7 @@ public class ImageResizer {
 
                 BufferedImage originalImage = ImageIO.read(path.toFile());
                 if (originalImage == null) {
-                    LOG.info("{}: Not a recognised image file - skipping", filename);
+                    LOG.warn("{}: Not a recognised image file - skipping", filename);
                     continue;
                 }
 

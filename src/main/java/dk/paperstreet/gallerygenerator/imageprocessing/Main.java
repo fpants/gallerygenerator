@@ -12,6 +12,7 @@ public class Main {
     private final OptionSet options;
 
     public static void main(String... args) {
+        configureLogging();
         new Main(args).generate();
     }
 
@@ -63,5 +64,11 @@ public class Main {
             }
         }
         return null;
+    }
+
+    private static void configureLogging() {
+        System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
+        System.setProperty("org.slf4j.simpleLogger.showShortLogName", "true");
+        System.setProperty("org.slf4j.simpleLogger.showThreadName", "false");
     }
 }
