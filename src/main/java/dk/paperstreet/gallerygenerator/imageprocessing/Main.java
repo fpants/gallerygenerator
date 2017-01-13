@@ -1,6 +1,5 @@
-package dk.paperstreet.gallerygenerator;
+package dk.paperstreet.gallerygenerator.imageprocessing;
 
-import dk.paperstreet.gallerygenerator.imageprocessing.ImageResizer;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -25,8 +24,9 @@ public class Main {
             try {
                 Files.createDirectory(Paths.get((String) options.valueOf("output")));
             } catch (IOException e) {
+                System.err.println("Unable to create directory: " + e.getMessage());
                 e.printStackTrace();
-                // TODO: 18-06-2016
+                System.exit(1);
             }
         }
 
@@ -34,15 +34,15 @@ public class Main {
         try {
             imageResizer.resizeAllImages((String) options.valueOf("input"), (String) options.valueOf("output"), (Integer) options.valueOf("resizeto"));
         } catch (Exception e) {
+            System.err.println("Unable to perform resize operation: " + e.getMessage());
             e.printStackTrace();
-            // TODO: 18-06-2016
+            System.exit(1);
         }
     }
 
     private OptionSet parseOptions(String... args) {
-        OptionParser optionParser = null;
+        OptionParser optionParser = new OptionParser();
         try {
-            optionParser = new OptionParser();
             optionParser.accepts("input", "Input directory.").withRequiredArg().required();
             optionParser.accepts("output", "Output directory.").withRequiredArg().required();
             optionParser.accepts("resizeto", "Resize in pixels to this width or height, depending on which is widest.").withRequiredArg().ofType(Integer.class).required();
@@ -54,7 +54,7 @@ public class Main {
 
             return options;
         } catch (OptionException | IllegalArgumentException e) {
-            System.out.println("Error parsing options: " + e.getMessage() + System.lineSeparator());
+            System.err.println("Error parsing options: " + e.getMessage() + System.lineSeparator());
             try {
                 optionParser.printHelpOn(System.out);
                 System.exit(1);
